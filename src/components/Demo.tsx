@@ -15,7 +15,7 @@ const TABS: { id: string; label: string; icon: IconName; view: ComponentType }[]
 const RULES: { icon: IconName; title: string; text: string }[] = [
   { icon: 'eye', title: 'Every fact shows its source', text: 'Tap the links. If we cannot source something, we leave it out.' },
   { icon: 'clock', title: 'Prices say when they were checked', text: 'Fares change, so we show “about” and remind you to confirm.' },
-  { icon: 'shield', title: 'Nothing about you is stored', text: 'No account, no tracking. Your taps stay in this page.' },
+  { icon: 'shield', title: 'Nothing about you is stored', text: 'No account, no tracking. Live train times are fetched only when you tap for them.' },
 ]
 
 function VeiApp() {

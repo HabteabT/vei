@@ -8,6 +8,7 @@ const COLUMNS: { id: string; title: string; icon: IconName; items: string[]; now
     now: true,
     items: [
       'Airport to city, with sources',
+      'Live airport trains from Entur (you tap to load)',
       '“How do I pay?” guide',
       'Which-ticket helper',
       'A small starter list of places',
@@ -18,7 +19,7 @@ const COLUMNS: { id: string; title: string; icon: IconName; items: string[]; now
     title: 'Next',
     icon: 'clock',
     items: [
-      'Live departures from Entur’s free open data',
+      'Live door-to-door routes anywhere in Norway',
       'Works offline, add to your home screen',
       'Verified opening hours and prices',
       'Weather-aware suggestions',

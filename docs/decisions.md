@@ -33,7 +33,16 @@ Newest at the bottom. Each entry: what we chose, why, and what would change our 
 ## 007. Public repository
 - **Chose:** public from day one, at github.com/HabteabT/vei.
 - **Why:** the owner's choice. Note that anyone can read the code and the documented ideas.
-- **Open:** no licence chosen yet. Default is all rights reserved.
+
+## 009. Licence: MIT for the code
+- **Chose:** MIT, copyright Naibe Mehari Tekle. The name "Vei", the logo and the written content (`docs/`, `src/data/`) are excluded in the README and need permission to reuse.
+- **Why:** the repo is public anyway, so a clear licence beats "all rights reserved" for trust and for any contributors. The code is a small UI, and the real value is the curated, sourced content, the brand and execution.
+- **Trade-off:** anyone may copy, fork and even sell the code. Copies already taken stay under MIT even if we change the licence later. If protecting the code matters more, switch new versions to AGPL-3.0 or keep the repo private.
+
+## 010. Live data is opt-in
+- **Chose:** the site calls Entur (live airport trains) only when the visitor taps a button, and says so on the button.
+- **Why:** keeps "no third-party requests by default" true and honest, since any call to Entur reveals the visitor's IP address to Entur.
+- **Also:** Entur's open API allows browser calls and asks clients to send `ET-Client-Name`.
 
 ## 008. No AI assistant attribution in commits or docs
 - **Chose:** commits use the owner's own git identity only.

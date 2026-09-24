@@ -14,7 +14,7 @@ const ITEMS: { icon: IconName; title: string; text: string }[] = [
   {
     icon: 'shield',
     title: 'Private by default',
-    text: 'No account and no tracking. Fonts are hosted by us, not loaded from third parties. Nothing about you leaves your phone.',
+    text: 'No account and no tracking. Fonts are hosted by us. The page only contacts a third party, Entur, when you ask for live departures.',
   },
 ]
 

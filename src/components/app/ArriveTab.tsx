@@ -1,6 +1,7 @@
 import { useMemo, useState } from 'react'
 import { OSL_TO_CENTRE } from '../../data/airport'
 import { LAST_CHECKED } from '../../data/meta'
+import { LiveTrains } from './LiveTrains'
 import { Sources } from './Sources'
 
 type Sort = 'cheapest' | 'fastest'
@@ -66,6 +67,8 @@ export function ArriveTab() {
           </div>
         )
       })}
+
+      <LiveTrains />
 
       <p className="note">
         Prices are approximate and come from travel guides, checked {LAST_CHECKED}. Confirm the exact fare in the

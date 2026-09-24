@@ -16,7 +16,7 @@ Read more in [docs/product.md](docs/product.md).
 
 | Tab | What it does |
 |---|---|
-| Arrive | Oslo Airport to city: regional train, Airport Express, airport bus. Sort by cheapest or fastest, with where to buy |
+| Arrive | Oslo Airport to city: regional train, Airport Express, airport bus. Sort by cheapest or fastest, with where to buy. Tap "Show next trains" for live departures from Entur |
 | Pay | "How do I pay?" for transit, shops, kiosks, Vipps and cash |
 | Tickets | Three questions, one recommendation: single tickets, a day ticket or the Oslo Pass |
 | Explore | A short starter list of places with indoor/outdoor and Oslo Pass filters |
@@ -38,7 +38,8 @@ npm run preview    # serve the production build locally
 
 - Vite, React and TypeScript
 - Plain CSS with design tokens, light and dark mode
-- Self-hosted fonts (Bricolage Grotesque, Inter) through Fontsource. The site makes no third-party requests
+- Self-hosted fonts (Bricolage Grotesque, Inter) through Fontsource
+- Live train times from [Entur](https://developer.entur.no/apis/open)'s open API, called from the browser only when the visitor taps for them. That is the site's only third-party request
 - No backend, no database, no analytics
 
 ## Project layout
@@ -73,7 +74,7 @@ Pushing to `main` builds and publishes the site with GitHub Pages (see `.github/
 
 ## License
 
-No license has been chosen yet, so by default all rights are reserved. Add one before inviting outside contributions.
+The code is released under the [MIT License](LICENSE). The name "Vei", the logo and the written content in `docs/` and `src/data/` are not part of that grant. Ask before reusing them.
 
 ## Disclaimer
 

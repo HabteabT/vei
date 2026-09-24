@@ -8,6 +8,7 @@ Last checked: **September 2026**.
 
 | Data | File | Source | Confidence |
 |---|---|---|---|
+| Live direct trains, Oslo Airport to Oslo S | `entur.ts` | [Entur Journey Planner API](https://developer.entur.no/apis/open), NLOD licence | High (live, official). Fetched only when the visitor taps |
 | Airport Express: 19 min, every 10 min | `airport.ts` | flytoget.no | High (official) |
 | Airport Express price, about 260 kr | `airport.ts` | Travel guides. Two guides gave 258 and 268 | Medium. Shown as "about" |
 | Regional train: about 23 min, about 3 an hour, about 129 kr | `airport.ts` | Oslo Spirit guide | Medium |
@@ -30,7 +31,7 @@ Last checked: **September 2026**.
 
 | Source | Use | Licence |
 |---|---|---|
-| [Entur Journey Planner API](https://developer.entur.no/apis/open) | Live routes and departures for all public transport in Norway | NLOD. Must send an `ET-Client-Name` header |
+| [Entur Journey Planner API](https://developer.entur.no/apis/open) | Already used for airport trains. Next: door-to-door routes anywhere in Norway | NLOD. Must send an `ET-Client-Name` header (we send `vei-prototype`). Browser calls are allowed (CORS is open) |
 | OpenStreetMap | Base map and places | ODbL |
 | Overture Maps places | Points of interest | CDLA Permissive 2.0 |
 | MET Norway weather API | Weather-aware suggestions | To be checked |
