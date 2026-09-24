@@ -1,0 +1,116 @@
+/* ------------------------------------------------------------------
+   Vei design tokens: "Aurora"
+   Polar-night blues with northern-lights teal, green and violet.
+   Light and dark themes follow the system, and can be forced with
+   <html data-theme="light|dark"> (see ThemeToggle).
+------------------------------------------------------------------- */
+
+:root {
+  --font-display: 'Sora Variable', system-ui, sans-serif;
+  --font-body: 'Plus Jakarta Sans Variable', system-ui, -apple-system, 'Segoe UI', sans-serif;
+
+  /* Ice (light) */
+  --bg: #f1f5fb;
+  --bg-elev: #ffffff;
+  --bg-sunk: #e5ecf6;
+  --ink: #0a1428;
+  --ink-2: #36466b;
+  --muted: #566990;
+  --line: #d3deeb;
+  --line-strong: #b4c4d9;
+
+  --brand: #3f5fff;
+  --brand-hover: #3450e8;
+  --brand-ink: #ffffff;
+  --brand-soft: #e3e8ff;
+  --link: #2f4be0;
+
+  --aurora-a: #19c9b0;
+  --aurora-b: #5be38f;
+  --aurora-c: #8c6cff;
+  --aurora-d: #3bb8f0;
+  --accent-text: #0a7466;
+
+  --good: #15803d;
+  --good-soft: #dcf4e5;
+  --warn: #a4470a;
+  --warn-soft: #fdebd3;
+  --danger: #c22a2a;
+  --danger-soft: #fbe0e0;
+  --info-soft: #dff1fb;
+
+  --glass: rgba(255, 255, 255, 0.72);
+  --glow-1: rgba(25, 201, 176, 0.22);
+  --glow-2: rgba(140, 108, 255, 0.2);
+  --shadow-1: 0 1px 2px rgba(10, 20, 40, 0.05), 0 6px 16px -8px rgba(10, 20, 40, 0.12);
+  --shadow-2: 0 2px 6px rgba(10, 20, 40, 0.06), 0 28px 56px -24px rgba(10, 20, 40, 0.3);
+
+  --r-sm: 12px;
+  --r-md: 18px;
+  --r-lg: 26px;
+  --r-pill: 999px;
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);
+  --container: 1160px;
+}
+
+/* Polar night (dark) */
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme='light']) {
+    --bg: #070b16;
+    --bg-elev: #101932;
+    --bg-sunk: #0a1122;
+    --ink: #f1f5ff;
+    --ink-2: #bcc7e4;
+    --muted: #8d9bc0;
+    --line: rgba(255, 255, 255, 0.1);
+    --line-strong: rgba(255, 255, 255, 0.2);
+    --brand-soft: rgba(63, 95, 255, 0.2);
+    --link: #93a9ff;
+    --accent-text: #5eead4;
+    --good: #5be38f;
+    --good-soft: rgba(91, 227, 143, 0.14);
+    --warn: #f5b35e;
+    --warn-soft: rgba(245, 179, 94, 0.14);
+    --danger: #ff8a8a;
+    --danger-soft: rgba(255, 138, 138, 0.14);
+    --info-soft: rgba(59, 184, 240, 0.14);
+    --glass: rgba(16, 25, 50, 0.66);
+    --glow-1: rgba(25, 201, 176, 0.16);
+    --glow-2: rgba(140, 108, 255, 0.2);
+    --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+    --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.4), 0 30px 60px -24px rgba(0, 0, 0, 0.7);
+  }
+}
+
+:root[data-theme='dark'] {
+  --bg: #070b16;
+  --bg-elev: #101932;
+  --bg-sunk: #0a1122;
+  --ink: #f1f5ff;
+  --ink-2: #bcc7e4;
+  --muted: #8d9bc0;
+  --line: rgba(255, 255, 255, 0.1);
+  --line-strong: rgba(255, 255, 255, 0.2);
+  --brand-soft: rgba(63, 95, 255, 0.2);
+  --link: #93a9ff;
+  --accent-text: #5eead4;
+  --good: #5be38f;
+  --good-soft: rgba(91, 227, 143, 0.14);
+  --warn: #f5b35e;
+  --warn-soft: rgba(245, 179, 94, 0.14);
+  --danger: #ff8a8a;
+  --danger-soft: rgba(255, 138, 138, 0.14);
+  --info-soft: rgba(59, 184, 240, 0.14);
+  --glass: rgba(16, 25, 50, 0.66);
+  --glow-1: rgba(25, 201, 176, 0.16);
+  --glow-2: rgba(140, 108, 255, 0.2);
+  --shadow-1: 0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 20px -10px rgba(0, 0, 0, 0.6);
+  --shadow-2: 0 2px 6px rgba(0, 0, 0, 0.4), 0 30px 60px -24px rgba(0, 0, 0, 0.7);
+}
+
+:root[data-theme='light'] {
+  color-scheme: light;
+}
+:root[data-theme='dark'] {
+  color-scheme: dark;
+}

@@ -1,0 +1,13 @@
+{
+  "name": "Vei: land, pay, go",
+  "short_name": "Vei",
+  "description": "Getting into town, the right ticket, and how to pay in Norway.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070b16",
+  "theme_color": "#070b16",
+  "icons": [
+    { "src": "favicon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" }
+  ]
+}

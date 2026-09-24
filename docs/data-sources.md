@@ -34,7 +34,9 @@ Last checked: **September 2026**.
 | [Entur Journey Planner API](https://developer.entur.no/apis/open) | Already used for airport trains. Next: door-to-door routes anywhere in Norway | NLOD. Must send an `ET-Client-Name` header (we send `vei-prototype`). Browser calls are allowed (CORS is open) |
 | OpenStreetMap | Base map and places | ODbL |
 | Overture Maps places | Points of interest | CDLA Permissive 2.0 |
-| MET Norway weather API | Weather-aware suggestions | To be checked |
+| [Open-Meteo](https://open-meteo.com) | In use: current weather and rain chance for Oslo | Free for non-commercial use. Browser calls allowed. Attribution requested. See decision 013 |
+| MET Norway weather API | Alternative for a commercial launch | Rejects browser requests without a custom User-Agent, so it needs a small proxy |
+| Entur place search (geocoder) | In use: place suggestions in the trip planner | NLOD, same header as the journey planner |
 
 Google Places is avoided for cost reasons (see [product.md](product.md)).
 
