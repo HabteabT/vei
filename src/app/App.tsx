@@ -5,6 +5,7 @@ import { MarketingLayout } from '../layouts/MarketingLayout'
 import { LoginPage } from '../pages/auth/LoginPage'
 import { SignupPage } from '../pages/auth/SignupPage'
 import { MePage } from '../pages/app/MePage'
+import { PlacePage } from '../pages/app/PlacePage'
 import { Landing } from '../pages/landing/Landing'
 import { NotFoundPage } from '../pages/NotFoundPage'
 import { ToastProvider } from '../ui/Toast'
@@ -35,6 +36,7 @@ function AppRoutes() {
           return f.path === '' ? <Route key={f.id} index element={element} /> : <Route key={f.id} path={f.path} element={element} />
         })}
         <Route path="me" element={<RequireAuth><MePage /></RequireAuth>} />
+        <Route path="explore/:placeId" element={<PlacePage />} />
         <Route path="*" element={<Navigate to="/app" replace />} />
       </Route>
 
