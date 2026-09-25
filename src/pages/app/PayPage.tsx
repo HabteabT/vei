@@ -1,5 +1,7 @@
 import { Ticket, Wallet } from 'lucide-react'
 import { useSearchParams } from 'react-router-dom'
+import { useCity } from '../../app/hooks'
+import { CityTickets } from '../../components/CityTickets'
 import { PageHeader } from '../../components/PageHeader'
 import { PayGuide } from '../../components/PayGuide'
 import { TicketHelper } from '../../components/TicketHelper'
@@ -9,6 +11,7 @@ type Tab = 'pay' | 'tickets'
 
 export function PayPage() {
   const [params, setParams] = useSearchParams()
+  const [city] = useCity()
   const tab: Tab = params.get('tab') === 'tickets' ? 'tickets' : 'pay'
   const setTab = (next: Tab) => setParams(next === 'pay' ? {} : { tab: next }, { replace: true })
 
@@ -20,7 +23,9 @@ export function PayPage() {
         subtitle={
           tab === 'pay'
             ? 'Norway is almost cashless. Pick where you are standing.'
-            : 'Three questions and you have an answer.'
+            : city.id === 'oslo'
+              ? 'Three questions and you have an answer.'
+              : `Where to buy a ticket in ${city.name}.`
         }
         actions={
           <Segmented
@@ -34,7 +39,7 @@ export function PayPage() {
           />
         }
       />
-      {tab === 'pay' ? <PayGuide /> : <TicketHelper />}
+      {tab === 'pay' ? <PayGuide /> : city.id === 'oslo' ? <TicketHelper /> : <CityTickets city={city} />}
     </>
   )
 }

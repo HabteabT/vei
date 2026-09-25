@@ -1,7 +1,7 @@
 import { CalendarDays, Compass, Heart, Luggage, Plus, Sun, Sunrise, Sunset, Trash2, type LucideIcon } from 'lucide-react'
 import { useState } from 'react'
 import { Link } from 'react-router-dom'
-import { useObservable, useUserData } from '../../app/hooks'
+import { useCity, useObservable, useUserData } from '../../app/hooks'
 import { PageHeader } from '../../components/PageHeader'
 import { getPlace } from '../../data/places'
 import { TRIP_SLOTS, type TripItem, type TripSlot } from '../../domain/types'
@@ -59,13 +59,20 @@ function PlanItem({ item }: { item: TripItem }) {
 
 export function TripPage() {
   const data = useUserData()
+  const [city] = useCity()
   const items = useObservable(data.trip)
   const favorites = useObservable(data.favorites)
   const notify = useToast()
   const [title, setTitle] = useState('')
   const [slot, setSlot] = useState<TripSlot>('anytime')
 
-  const saved = favorites.map(getPlace).filter((p): p is NonNullable<typeof p> => Boolean(p))
+  const saved = favorites
+    .map(getPlace)
+    .filter((p): p is NonNullable<typeof p> => Boolean(p && p.cityId === city.id))
+  const visibleItems = items.filter((item) => {
+    if (!item.placeId) return true
+    return getPlace(item.placeId)?.cityId === city.id
+  })
 
   const add = (e: React.FormEvent) => {
     e.preventDefault()
@@ -79,7 +86,7 @@ export function TripPage() {
     <>
       <PageHeader
         eyebrow="My trip"
-        title="Your plan for Oslo"
+        title={`Your plan for ${city.name}`}
         subtitle="Saved places and a simple day plan. Stored in your account."
         actions={
           <LinkButton to="/app/explore" variant="secondary" size="sm">
@@ -140,13 +147,13 @@ export function TripPage() {
             </div>
           </form>
 
-          {items.length === 0 ? (
+          {visibleItems.length === 0 ? (
             <EmptyState icon={Luggage} title="Your plan is empty">
               Add a place from Explore, or type your own item above. See <Link to="/app/go">how to get around</Link> too.
             </EmptyState>
           ) : (
             TRIP_SLOTS.map((s) => {
-              const inSlot = items.filter((i) => i.slot === s.id)
+              const inSlot = visibleItems.filter((i) => i.slot === s.id)
               if (inSlot.length === 0) return null
               const Icon = SLOT_ICONS[s.id]
               return (

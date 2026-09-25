@@ -1,7 +1,9 @@
 import { Compass, Route, Sparkles, Ticket, Wallet } from 'lucide-react'
 import { Link } from 'react-router-dom'
 import { useAuth } from '../../app/auth'
+import { useCity } from '../../app/hooks'
 import { Checklist } from '../../components/Checklist'
+import { CityAirport } from '../../components/CityAirport'
 import { LiveTrains } from '../../components/LiveTrains'
 import { PageHeader } from '../../components/PageHeader'
 import { WeatherCard } from '../../components/WeatherCard'
@@ -17,6 +19,7 @@ const QUICK = [
 
 export function TodayPage() {
   const { user } = useAuth()
+  const [city] = useCity()
   const first = user?.name.split(' ')[0]
   const date = new Date().toLocaleDateString('en-GB', { weekday: 'long', day: 'numeric', month: 'long', timeZone: 'Europe/Oslo' })
 
@@ -25,7 +28,7 @@ export function TodayPage() {
       <PageHeader
         eyebrow={date}
         title={`${greeting(osloHour())}${first ? `, ${first}` : ''}`}
-        subtitle="What matters for your first hours in Oslo."
+        subtitle={`What matters for your first hours in ${city.name}.`}
       />
 
       {!user && (
@@ -55,9 +58,9 @@ export function TodayPage() {
         <WeatherCard />
         <section className="card card--pad tile" aria-labelledby="next-trains">
           <h2 id="next-trains" className="tile__title">
-            Next trains from the airport
+            {city.id === 'oslo' ? 'Next trains from the airport' : `Airport to ${city.name}`}
           </h2>
-          <LiveTrains limit={3} />
+          {city.id === 'oslo' ? <LiveTrains limit={3} /> : <CityAirport city={city} compact />}
         </section>
       </div>
 

@@ -1,5 +1,6 @@
 import { LocateFixed, MapPin, Search, type LucideIcon } from 'lucide-react'
 import { useEffect, useId, useRef, useState } from 'react'
+import { useCity } from '../app/hooks'
 import { useServices } from '../app/services'
 import type { PlaceRef } from '../services/transit/TransitService'
 import { Spinner } from '../ui/Feedback'
@@ -19,6 +20,7 @@ export function PlaceSearch({
   allowLocate?: boolean
 }) {
   const { transit } = useServices()
+  const [city] = useCity()
   const id = useId()
   const listId = `${id}-list`
   const [text, setText] = useState(value?.name ?? '')
@@ -43,13 +45,14 @@ export function PlaceSearch({
   useEffect(() => {
     if (!typed.current || text.trim().length < 2) {
       setOptions([])
+      if (text.trim().length < 2) setMessage(null)
       return
     }
     const controller = new AbortController()
     const timer = window.setTimeout(() => {
       setLoading(true)
       transit
-        .searchPlaces(text, controller.signal)
+        .searchPlaces(text, controller.signal, { lat: city.lat, lon: city.lon, radiusKm: 55 })
         .then((found) => {
           setOptions(found)
           setActive(-1)
@@ -64,7 +67,7 @@ export function PlaceSearch({
       window.clearTimeout(timer)
       controller.abort()
     }
-  }, [text, transit])
+  }, [text, transit, city.lat, city.lon])
 
   const choose = (place: PlaceRef) => {
     typed.current = false
@@ -128,6 +131,7 @@ export function PlaceSearch({
             typed.current = true
             setText(e.target.value)
             setOpen(true)
+            setMessage(null)
             if (value) onChange(null)
           }}
           onFocus={() => setOpen(true)}

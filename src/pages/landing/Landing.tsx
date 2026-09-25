@@ -28,7 +28,7 @@ const FEATURES: { icon: LucideIcon; title: string; text: string }[] = [
   { icon: Wallet, title: 'How to pay', text: 'Plain answers for buses, shops, kiosks and Vipps, so you never get stuck at a payment screen.' },
   { icon: Ticket, title: 'Which ticket?', text: 'Three questions to pick between single tickets, a day ticket and the Oslo Pass.' },
   { icon: Route, title: 'Trip planner', text: 'Any place to any place in Norway, with the changes and the app that sells each ticket.' },
-  { icon: Compass, title: 'Explore', text: 'A short hand-picked list with rainy-day, outdoor and Oslo Pass filters. Save the ones you love.' },
+  { icon: Compass, title: 'Explore', text: 'A short list for the city you picked, with its own page for each place. Save the ones you love.' },
   { icon: Luggage, title: 'My trip', text: 'Turn saved places into a simple morning, afternoon and evening plan, kept in your account.' },
 ]
 
@@ -46,7 +46,7 @@ const PRIVACY: { icon: LucideIcon; title: string; text: string }[] = [
 
 const ROADMAP = [
   { title: 'Now', tone: 'now', items: ['Airport to city with live trains', 'Trip planner across Norway', 'Pay guide and ticket helper', 'Accounts, saved places and a day plan'] },
-  { title: 'Next', tone: '', items: ['Real accounts on an EU-hosted service', 'Verified opening hours and prices', 'German and Norwegian', 'More cities beyond Oslo'] },
+  { title: 'Next', tone: '', items: ['Real accounts on an EU-hosted service', 'Verified opening hours and prices', 'Reviews, photos, and a day-by-day journal', 'More cities beyond the first four'] },
   { title: 'Later', tone: '', items: ['Cruise-stop mode: six hours, one plan', 'A version for tourism boards', 'A trip pass for the whole stay'] },
 ]
 
@@ -77,7 +77,7 @@ export function Landing() {
         <div className="container hero__grid">
           <div className="hero__copy">
             <p className="pill-tag">
-              <Sparkles aria-hidden="true" /> Early prototype · Oslo first
+              <Sparkles aria-hidden="true" /> Early prototype · Four cities
             </p>
             <h1>
               Land. Pay. <span className="gradient-text">Go.</span>
