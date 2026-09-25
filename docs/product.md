@@ -55,9 +55,13 @@ Pieces of this exist, but no single app does it well for a visitor in Norway. "E
 | Asian visitors | Test | Fast growing. May struggle most with payment and language. A guess to test |
 | Domestic | Skip | Locals use Vipps and local apps |
 
-## First version: "Oslo, first 24 hours"
+## First version: four cities, one job at a time
 
-A web app opened by QR code. No download, no account.
+A website opened in the browser. No download. The current build lets a visitor pick **Oslo, Kristiansand, Bergen, or Stavanger** from one search bar at the top. Oslo still has the deepest guide (live airport trains, the ticket helper, the Oslo Pass list). The other three have a sourced airport-to-centre guide, local ticket steps, and a short place list.
+
+The full product requirements, including what is deliberately not built yet, are in [requirements.md](requirements.md).
+
+A web app opened by QR code. Accounts are optional in the demo.
 
 | Priority | Feature |
 |---|---|
@@ -67,9 +71,9 @@ A web app opened by QR code. No download, no account.
 | Must | Hand-picked "next best thing" list |
 | Should | Offline saving (add to home screen) |
 | Should | Rainy-day mode, budget estimate, share plan |
-| Later | German and Norwegian, cruise-day mode, a second city |
+| Later | German and Norwegian, cruise-day mode, reviews that sync across phones, a day-by-day journal, restaurants and bars, more cities |
 
-**Not building yet:** accounts, reviews, video, ads, a native app, selling tickets, an AI chatbot as the main feature.
+**Not building yet:** a calendar journal, a restaurants section, video, ads, a native app, selling tickets, an AI chatbot as the main feature. Demo accounts and place comments exist, but they stay in the browser.
 
 ## How it could earn money
 

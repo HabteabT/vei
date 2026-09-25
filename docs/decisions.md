@@ -75,3 +75,19 @@ Newest at the bottom. Each entry: what we chose, why, and what would change our 
 ## 016. Guards decide by intent
 - **Chose:** a protected page sends a signed-out visitor to sign-in (and back afterwards), but after a deliberate sign-out or account deletion it sends them home.
 - **Why:** the first version sent people to the sign-in page right after they signed out, with a confusing "that page needs an account" message. The router applies navigation at a lower priority than state updates, so ordering the calls could not fix it.
+
+## 017. Four cities, one search bar, still no backend
+- **Chose:** Oslo, Kristiansand, Bergen, and Stavanger, picked from one search bar at the top of the app. The choice is stored on the device. Screens read that city instead of assuming Oslo.
+- **Why:** the product needs more than one city, and the first version should stay small enough to test. Four is inside the "one to four, or up to five" range. A new city should be data, not a rewrite.
+- **Not in this step:** a backend, a database, an API of our own, reviews, photos, opening hours, a calendar journal, and a restaurants module. Those stay in [requirements.md](requirements.md) until the city structure is solid.
+- **Revisit if:** visitors need accounts and reviews that follow them across devices. That is when `frontend/`, `backend/`, and `database/` replace the browser-only demo.
+
+## 018. Reviews after sign-in, stored on the device
+- **Chose:** rating and a comment on each place, only after sign-in. Comments are readable by anyone on this browser. Deleting the account deletes that person's comments.
+- **Why:** visitors asked to rate and comment now. A server is not ready, and the existing demo accounts are enough for one device.
+- **Also:** each place page shows a street or place address, and the weather at that place when live data is on.
+- **Revisit if:** comments need to be seen by visitors on other phones. That needs the backend.
+
+## 019. One city at a time
+- **Chose:** after the city search settles on a name, Today, Get around, Pay, Explore, and My trip show only that city. Place search stays inside a circle around the city, and the planner starts at that city’s airport.
+- **Why:** typing Oslo or Kristiansand was still leaving the other city’s tickets, saved places, and airport in view.

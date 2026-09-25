@@ -4,7 +4,7 @@
 
 Vei (Norwegian for "way" or "road") sorts the boring parts of arriving in Norway: getting into town, buying the right ticket, and paying like a local. It is a calm, honest visitor guide. Free, no ads, no tracking.
 
-> Status: working demo. Oslo first. Facts come from public sources, live data from Entur and Open-Meteo.
+> Status: working demo. Four cities, chosen from the search bar: Oslo, Kristiansand, Bergen, and Stavanger. Oslo is the detailed guide. Facts come from public sources, live data from Entur and Open-Meteo.
 
 ## Try it
 
@@ -17,10 +17,11 @@ Vei (Norwegian for "way" or "road") sorts the boring parts of arriving in Norway
 |---|---|
 | **Marketing site** | Illustrated landing page with features, how it works, privacy and roadmap |
 | **Accounts** | Sign up, sign in, sign out, protected pages, edit profile, change password, download your data, delete your account |
-| **Today** | Live Oslo weather, next airport trains, quick actions, and an arrival checklist that remembers your progress |
+| **City search** | One bar at the top of the app. Pick Oslo, Kristiansand, Bergen, or Stavanger. The other screens follow that city |
+| **Today** | Weather for the city you picked, the airport way in, quick actions, and an arrival checklist that remembers your progress |
 | **Get around** | Airport options compared, live trains, and a trip planner from any place to any place in Norway with real routes, changes and which app sells the ticket |
 | **Pay & tickets** | "How do I pay?" for transit, shops, kiosks, Vipps and cash, and a three-question ticket helper |
-| **Explore** | Hand-picked places with rainy-day, outdoor, Oslo Pass, "for you" and saved filters. Save favourites and add to your trip |
+| **Explore** | Hand-picked places with rainy-day, outdoor, Oslo Pass, "for you" and saved filters. Each place has an address, weather, and a page where a signed-in visitor can rate it and leave a comment |
 | **My trip** | Saved places and a morning, afternoon and evening plan with notes (needs an account) |
 | **Profile** | Interests and budget, theme, live-data switch, security, data export |
 | **Also** | Light and dark themes, works offline after the first visit, keyboard and screen-reader friendly |
@@ -38,7 +39,7 @@ Requires Node 20 or newer.
 ```bash
 npm install
 npm run dev        # http://localhost:5173
-npm test           # 43 unit tests
+npm test           # unit tests
 npm run build      # type-check + production build into dist/
 npm run preview    # serve the production build locally
 ```
@@ -77,6 +78,7 @@ src/
 - [Design system](docs/design.md)
 - [Data sources](docs/data-sources.md)
 - [Decision log](docs/decisions.md)
+- [Product requirements](docs/requirements.md)
 
 ## Deploy
 
@@ -86,7 +88,9 @@ Pushing to `main` runs the tests, builds, and publishes with GitHub Pages (`.git
 
 - Demo accounts are not real security (browser storage only).
 - Prices are approximate. Ruter's official fares are only published as PDFs.
-- English only for now. Opening hours and entry fees are left out until they can be verified.
+- English only for now. Opening hours, entry fees, photos, and reviews are left out until they can be verified.
+- Four cities. Oslo has the full ticket helper and live airport trains. The other three have a sourced airport guide and a short place list.
+- No backend and no database yet. Accounts and saved places stay in the browser. See [docs/requirements.md](docs/requirements.md).
 - Open-Meteo's free tier is for non-commercial use.
 
 ## License
