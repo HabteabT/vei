@@ -1,16 +1,24 @@
 import { ChevronDown, Clock, Tag } from 'lucide-react'
 import { useMemo, useState } from 'react'
+import { useCity } from '../app/hooks'
 import { OSL_TO_CENTRE } from '../data/airport'
 import { LAST_CHECKED } from '../data/meta'
 import { Segmented } from '../ui/Segmented'
 import { Alert, Badge } from '../ui/Feedback'
+import { CityAirport } from './CityAirport'
 import { LiveTrains } from './LiveTrains'
 import { SourceLinks } from './SourceLinks'
 
 type Sort = 'cheapest' | 'fastest'
 
-/** Oslo Airport to the city: the three options side by side, then live trains on top of that. */
+/** Airport to the selected city. Oslo keeps the live-train comparison. */
 export function FromAirport() {
+  const [city] = useCity()
+  if (city.id !== 'oslo') return <CityAirport city={city} />
+  return <OsloFromAirport />
+}
+
+function OsloFromAirport() {
   const [sort, setSort] = useState<Sort>('cheapest')
   const [open, setOpen] = useState<string | null>(null)
 
