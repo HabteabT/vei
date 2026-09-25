@@ -1,4 +1,5 @@
-import { useCallback, useEffect, useState, useSyncExternalStore } from 'react'
+import { useCallback, useEffect, useRef, useState, useSyncExternalStore } from 'react'
+import { CITIES, getCity, type City, type CityId } from '../data/cities'
 import type { Theme } from '../services/settings/ThemeSetting'
 import { applyTheme } from '../services/settings/ThemeSetting'
 import type { Observable, UserData } from '../services/userdata/repositories'
@@ -23,6 +24,14 @@ export function useLiveData(): [boolean, (on: boolean) => void] {
   return [enabled, useCallback((on: boolean) => liveData.set(on), [liveData])]
 }
 
+/** The selected city. An unknown saved id falls back to Oslo until the visitor picks again. */
+export function useCity(): [City, (id: CityId) => void] {
+  const { city } = useServices()
+  const stored = useObservable(city)
+  const current = getCity(stored) ?? CITIES[0]
+  return [current, useCallback((id: CityId) => city.set(id), [city])]
+}
+
 export function useTheme(): [Theme, (theme: Theme) => void] {
   const { theme } = useServices()
   const current = useObservable(theme)
@@ -43,21 +52,32 @@ type RequestState<T> =
 export function useRequest<T>(load: ((signal: AbortSignal) => Promise<T>) | null, deps: readonly unknown[]) {
   const [state, setState] = useState<RequestState<T>>({ status: 'idle' })
   const [nonce, setNonce] = useState(0)
+  const loadRef = useRef(load)
+  loadRef.current = load
 
   useEffect(() => {
-    if (!load) {
+    const current = loadRef.current
+    if (!current) {
       setState({ status: 'idle' })
       return
     }
     const controller = new AbortController()
+    let active = true
     setState((previous) => ({ status: 'loading', data: previous.status === 'ok' ? previous.data : undefined }))
-    load(controller.signal)
-      .then((data) => setState({ status: 'ok', data, at: Date.now() }))
+    current(controller.signal)
+      .then((data) => {
+        if (!active) return
+        setState({ status: 'ok', data, at: Date.now() })
+      })
       .catch((error: unknown) => {
-        if (controller.signal.aborted) return
+        if (!active) return
         setState({ status: 'error', error: error instanceof Error ? error : new Error(String(error)) })
       })
-    return () => controller.abort()
+    return () => {
+      active = false
+      controller.abort()
+    }
+    // The loader is read from a ref. `load === null` and `deps` decide when to start again.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [nonce, load === null, ...deps])
 

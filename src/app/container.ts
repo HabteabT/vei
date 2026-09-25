@@ -1,11 +1,13 @@
 import { LocalAuthService, cryptoIds, systemClock } from '../services/auth/LocalAuthService'
 import type { AuthService } from '../services/auth/AuthService'
 import { Pbkdf2Hasher } from '../services/auth/Pbkdf2Hasher'
+import { CitySetting } from '../services/settings/CitySetting'
 import { LiveDataSetting } from '../services/settings/LiveDataSetting'
 import { ThemeSetting } from '../services/settings/ThemeSetting'
 import { BrowserStore } from '../services/storage/BrowserStore'
 import type { KeyValueStore } from '../services/storage/KeyValueStore'
 import { MemoryStore } from '../services/storage/MemoryStore'
+import { LocalReviews } from '../services/reviews/LocalReviews'
 import { EnturTransitService } from '../services/transit/EnturTransitService'
 import type { TransitService } from '../services/transit/TransitService'
 import { LocalUserDataProvider } from '../services/userdata/LocalUserData'
@@ -20,6 +22,8 @@ export interface Container {
   weather: WeatherService
   liveData: LiveDataSetting
   theme: ThemeSetting
+  city: CitySetting
+  reviews: LocalReviews
   /** False when the browser blocks storage, so nothing will survive a reload. */
   persistent: boolean
 }
@@ -34,7 +38,11 @@ export function createContainer(): Container {
 
   const auth = new LocalAuthService({ store, hasher: new Pbkdf2Hasher(), clock: systemClock, ids: cryptoIds })
   const userData = new LocalUserDataProvider(store, cryptoIds)
-  auth.onAccountDeleted((userId) => userData.forUser(userId).purge())
+  const reviews = new LocalReviews(store, cryptoIds)
+  auth.onAccountDeleted((userId) => {
+    userData.forUser(userId).purge()
+    reviews.purgeUser(userId)
+  })
 
   return {
     auth,
@@ -43,6 +51,8 @@ export function createContainer(): Container {
     weather: new OpenMeteoWeatherService(),
     liveData: new LiveDataSetting(store),
     theme: new ThemeSetting(store),
+    city: new CitySetting(store),
+    reviews,
     persistent,
   }
 }
