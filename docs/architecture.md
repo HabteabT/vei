@@ -14,7 +14,7 @@ src/
     userdata/      Favorites / Trip / Checklist / Preferences repositories
     transit/       TransitService <- EnturTransitService
     weather/       WeatherService <- OpenMeteoWeatherService
-    settings/      Theme and live-data switches
+    settings/      Theme, live-data, and the selected city
   data/          Sourced content (airport options, pay guide, places, ticket rules)
   app/           Wiring: composition root, contexts, guards, routes, hooks
   ui/            Design-system primitives (Button, Field, Modal, Toast...)
@@ -44,6 +44,12 @@ The demo `LocalAuthService` keeps accounts in the browser. To use a real service
 3. Do the same for `UserDataProvider` if saved places should live on a server.
 
 No page, component or guard needs to change.
+
+## Cities
+
+The visitor picks one city in `CitySearch`, stored by `CitySetting` (`vei.settings.city`). Every screen reads it through `useCity()`. Content is keyed by city id in `src/data/cities.ts`, `src/data/cityGuides.ts`, and `src/data/places.ts`. A new city is new data in those files, not a new set of screens.
+
+Oslo still uses the older airport and ticket modules (`airport.ts`, `tickets.ts`) because that guide was written first. The other cities use `cityGuides.ts`.
 
 ## Adding a feature
 
@@ -76,4 +82,4 @@ Live train times, the trip planner and weather call Entur and Open-Meteo directl
 
 ## Tests
 
-`npm test` runs Vitest. Covered: validators, the whole auth service (sign up, duplicates, wrong password, lockout and unlock, session expiry, password change, deletion and cleanup hooks), the user data repositories, ticket rules, weather codes, time helpers, and the Entur client (with a fake `fetch`). UI flows were checked by hand in a browser.
+`npm test` runs Vitest. Covered: validators, the whole auth service (sign up, duplicates, wrong password, lockout and unlock, session expiry, password change, deletion and cleanup hooks), the user data repositories, ticket rules, weather codes, time helpers, city search, place reviews, and the Entur client (with a fake `fetch`). UI flows were checked by hand in a browser.

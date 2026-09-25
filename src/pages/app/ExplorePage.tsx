@@ -1,19 +1,28 @@
 import { Check, Heart, MapPin, Plus, Search, Sparkles, Ticket } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
-import { useObservable, useUserData } from '../../app/hooks'
+import { Link, useSearchParams } from 'react-router-dom'
+import { useCity, useObservable, useUserData } from '../../app/hooks'
+import { useServices } from '../../app/services'
 import { PageHeader } from '../../components/PageHeader'
 import { SourceLinks } from '../../components/SourceLinks'
 import { useAuthGate } from '../../components/useAuthGate'
-import { OSLO_PASS_SOURCE, PLACES, type Place } from '../../data/places'
+import { averageRating } from '../../domain/reviews'
+import { OSLO_PASS_SOURCE, placesIn, type Place } from '../../data/places'
 import { Alert, Badge, EmptyState } from '../../ui/Feedback'
 import { useToast } from '../../ui/Toast'
 
 type Filter = 'all' | 'indoor' | 'outdoor' | 'pass' | 'saved' | 'foryou'
 
+function uniqueSources(places: Place[]) {
+  return [...new Map(places.map((place) => [place.source.url, place.source])).values()]
+}
+
 export function ExplorePage() {
   const [params, setParams] = useSearchParams()
-  const filter = (params.get('filter') as Filter) || 'all'
+  const [city] = useCity()
+  const places = placesIn(city.id)
+  const requested = (params.get('filter') as Filter) || 'all'
+  const filter: Filter = requested === 'pass' && city.id !== 'oslo' ? 'all' : requested
   const [query, setQuery] = useState('')
   const data = useUserData()
   const favorites = useObservable(data.favorites)
@@ -21,6 +30,8 @@ export function ExplorePage() {
   const preferences = useObservable(data.preferences)
   const [gate, gateModal] = useAuthGate()
   const notify = useToast()
+  const { reviews } = useServices()
+  const allReviews = useObservable(reviews)
 
   const setFilter = (next: Filter) => setParams(next === 'all' ? {} : { filter: next }, { replace: true })
   const interests = preferences.interests
@@ -28,7 +39,7 @@ export function ExplorePage() {
   const shown = useMemo(() => {
     const q = query.trim().toLowerCase()
     const matches = (p: Place) => p.interests.filter((i) => interests.includes(i)).length
-    return PLACES.filter((p) => {
+    return placesIn(city.id).filter((p) => {
       if (q && !`${p.name} ${p.area} ${p.blurb}`.toLowerCase().includes(q)) return false
       switch (filter) {
         case 'indoor':
@@ -45,15 +56,17 @@ export function ExplorePage() {
           return true
       }
     }).sort((a, b) => matches(b) - matches(a))
-  }, [query, filter, favorites, interests])
+  }, [query, filter, favorites, interests, city.id])
+
+  const savedHere = favorites.filter((id) => places.some((place) => place.id === id)).length
 
   const filters: { id: Filter; label: string; icon?: typeof Heart }[] = [
     { id: 'all', label: 'All' },
     { id: 'indoor', label: 'Rainy day' },
     { id: 'outdoor', label: 'Outdoors' },
-    { id: 'pass', label: 'On Oslo Pass', icon: Ticket },
+    ...(city.id === 'oslo' ? [{ id: 'pass' as const, label: 'On Oslo Pass', icon: Ticket }] : []),
     ...(interests.length ? [{ id: 'foryou' as const, label: 'For you', icon: Sparkles }] : []),
-    { id: 'saved', label: `Saved${favorites.length ? ` (${favorites.length})` : ''}`, icon: Heart },
+    { id: 'saved', label: `Saved${savedHere ? ` (${savedHere})` : ''}`, icon: Heart },
   ]
 
   const toggleFavorite = (place: Place) =>
@@ -70,7 +83,7 @@ export function ExplorePage() {
 
   return (
     <>
-      <PageHeader eyebrow="Explore" title="Next best thing" subtitle="A short, hand-picked starter list. Not 10,000 pins." />
+      <PageHeader eyebrow={city.name} title="Next best thing" subtitle={`A short list for ${city.name}. Open a place for how to get there.`} />
 
       <div className="stack">
         <div className="field__control">
@@ -104,6 +117,7 @@ export function ExplorePage() {
               const saved = favorites.includes(p.id)
               const inTrip = trip.some((t) => t.placeId === p.id)
               const match = p.interests.some((i) => interests.includes(i))
+              const score = averageRating(allReviews.filter((review) => review.placeId === p.id).map((review) => review.rating))
               return (
                 <article key={p.id} className="card place card--interactive">
                   <div className={`place__art place__art--${p.setting}`} aria-hidden="true">
@@ -112,10 +126,13 @@ export function ExplorePage() {
                   <div className="place__body">
                     <div className="place__top">
                       <div>
-                        <h2 className="place__name">{p.name}</h2>
+                        <h2 className="place__name">
+                          <Link to={`/app/explore/${p.id}`}>{p.name}</Link>
+                        </h2>
                         <span className="place__area">
-                          <MapPin aria-hidden="true" /> {p.area}
+                          <MapPin aria-hidden="true" /> {p.address}
                         </span>
+                        {score !== null && <span className="place__area">{score} out of 5</span>}
                       </div>
                       <button
                         type="button"
@@ -131,7 +148,7 @@ export function ExplorePage() {
                     <div className="place__foot">
                       <div className="place__tags">
                         <Badge tone={p.setting === 'indoor' ? 'info' : undefined}>{p.setting === 'indoor' ? 'Indoor' : 'Outdoor'}</Badge>
-                        {p.osloPass ? <Badge tone="good">On Oslo Pass</Badge> : <Badge tone="warn">Pass: check first</Badge>}
+                        {city.id === 'oslo' && (p.osloPass ? <Badge tone="good">On Oslo Pass</Badge> : <Badge tone="warn">Pass: check first</Badge>)}
                         {match && <Badge tone="brand" icon={Sparkles}>Matches you</Badge>}
                       </div>
                       <button type="button" className="chip chip--sm" onClick={addToTrip(p)} disabled={inTrip}>
@@ -149,7 +166,7 @@ export function ExplorePage() {
         <Alert tone="info">
           Opening hours and entry fees are not shown yet, because Vei only shows what it can verify. Check the official site before you go.
         </Alert>
-        <SourceLinks items={[OSLO_PASS_SOURCE]} />
+        <SourceLinks items={city.id === 'oslo' ? [OSLO_PASS_SOURCE, ...uniqueSources(places)] : uniqueSources(places)} />
       </div>
       {gateModal}
     </>

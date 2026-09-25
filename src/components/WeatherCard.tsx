@@ -12,7 +12,7 @@ import {
   type LucideIcon,
 } from 'lucide-react'
 import { Link } from 'react-router-dom'
-import { useLiveData, useRequest } from '../app/hooks'
+import { useCity, useLiveData, useRequest } from '../app/hooks'
 import { useServices } from '../app/services'
 import type { WeatherKind } from '../domain/weather'
 import { Skeleton } from './Skeleton'
@@ -28,18 +28,19 @@ const ICONS: Record<WeatherKind, LucideIcon> = {
   storm: CloudLightning,
 }
 
-const OSLO = { lat: 59.91, lon: 10.75 }
-
-/** Current Oslo weather, with a nudge toward indoor places when it is wet. Only loads if live data is on. */
-export function WeatherCard() {
+/** Current weather. Without coordinates, this is the selected city. A place page passes its own. */
+export function WeatherCard({ lat, lon, name }: { lat?: number; lon?: number; name?: string }) {
   const { weather } = useServices()
+  const [city] = useCity()
   const [live] = useLiveData()
-  const { state } = useRequest(live ? (signal) => weather.current(OSLO.lat, OSLO.lon, signal) : null, [weather])
+  const point = { lat: lat ?? city.lat, lon: lon ?? city.lon }
+  const label = name ?? city.name
+  const { state } = useRequest(live ? (signal) => weather.current(point.lat, point.lon, signal) : null, [weather, point.lat, point.lon])
 
   if (!live) {
     return (
       <section className="card card--pad tile tile--muted" aria-label="Weather">
-        <h2 className="tile__title">Oslo weather</h2>
+        <h2 className="tile__title">{label} weather</h2>
         <p className="tile__hint">Turn on live data to see the weather and get rainy-day suggestions.</p>
       </section>
     )
@@ -48,7 +49,7 @@ export function WeatherCard() {
   if (state.status === 'error') {
     return (
       <section className="card card--pad tile" aria-label="Weather">
-        <h2 className="tile__title">Oslo weather</h2>
+        <h2 className="tile__title">{label} weather</h2>
         <p className="tile__hint">Could not load the weather. Check your connection.</p>
       </section>
     )
@@ -67,7 +68,7 @@ export function WeatherCard() {
   const Icon = w.kind === 'clear' && !w.isDay ? Moon : ICONS[w.kind]
   return (
     <section className="card card--pad tile weather" aria-label="Weather">
-      <h2 className="tile__title">Oslo right now</h2>
+      <h2 className="tile__title">{label} right now</h2>
       <div className="weather__now">
         <Icon className="weather__icon" aria-hidden="true" />
         <div>

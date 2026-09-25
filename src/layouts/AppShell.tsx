@@ -3,6 +3,7 @@ import { NavLink, Outlet } from 'react-router-dom'
 import { useAuth } from '../app/auth'
 import { FEATURES } from '../app/features'
 import { useServices } from '../app/services'
+import { CitySearch } from '../components/CitySearch'
 import { LiveDataSwitch } from '../components/LiveDataSwitch'
 import { ThemeToggle } from '../components/ThemeToggle'
 import { UserMenu } from '../components/UserMenu'
@@ -57,6 +58,7 @@ export function AppShell() {
         {!persistent && (
           <Alert tone="warn">Your browser is blocking storage, so nothing you save will survive a reload.</Alert>
         )}
+        <CitySearch />
         <Outlet />
       </main>
 

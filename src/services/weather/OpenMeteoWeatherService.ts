@@ -28,8 +28,11 @@ export class OpenMeteoWeatherService implements WeatherService {
     })
     const res = await this.fetchFn(`${URL_BASE}?${params}`, { signal })
     if (!res.ok) throw new Error(`Weather failed (${res.status})`)
-    const raw = (await res.json()) as Raw
-    const chances = raw.hourly.precipitation_probability.filter((n) => typeof n === 'number')
+    const raw = (await res.json()) as Partial<Raw>
+    if (!raw.current || typeof raw.current.temperature_2m !== 'number' || typeof raw.current.weather_code !== 'number') {
+      throw new Error('Weather failed (empty)')
+    }
+    const chances = (raw.hourly?.precipitation_probability ?? []).filter((n) => typeof n === 'number')
     return {
       ...describeWeather(raw.current.weather_code),
       temperatureC: Math.round(raw.current.temperature_2m),

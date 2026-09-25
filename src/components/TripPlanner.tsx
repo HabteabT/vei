@@ -1,6 +1,6 @@
 import { ArrowLeftRight, Flag, MapPin, Route } from 'lucide-react'
-import { useState } from 'react'
-import { useRequest } from '../app/hooks'
+import { useEffect, useState } from 'react'
+import { useCity, useRequest } from '../app/hooks'
 import { useServices } from '../app/services'
 import { OSLO_AIRPORT, type PlaceRef } from '../services/transit/TransitService'
 import { Button, IconButton } from '../ui/Button'
@@ -10,12 +10,24 @@ import { LiveGate } from './LiveGate'
 import { PlaceSearch } from './PlaceSearch'
 import { Skeleton } from './Skeleton'
 
-/** Door to door across Norway using Entur's national journey planner. */
+/** Door to door inside the chosen city, using Entur's journey planner. */
+function airportOf(city: { id: string; airport: string; airportLat: number; airportLon: number }): PlaceRef {
+  if (city.id === 'oslo') return OSLO_AIRPORT
+  return { name: city.airport, lat: city.airportLat, lon: city.airportLon }
+}
+
 export function TripPlanner() {
   const { transit } = useServices()
-  const [from, setFrom] = useState<PlaceRef | null>(OSLO_AIRPORT)
+  const [city] = useCity()
+  const [from, setFrom] = useState<PlaceRef | null>(() => airportOf(city))
   const [to, setTo] = useState<PlaceRef | null>(null)
   const [query, setQuery] = useState<{ from: PlaceRef; to: PlaceRef } | null>(null)
+
+  useEffect(() => {
+    setFrom(airportOf(city))
+    setTo(null)
+    setQuery(null)
+  }, [city])
 
   const { state } = useRequest(query ? (signal) => transit.planTrip(query.from, query.to, signal) : null, [query, transit])
 

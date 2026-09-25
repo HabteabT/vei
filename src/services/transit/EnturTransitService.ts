@@ -18,8 +18,8 @@ const JOURNEY_URL = 'https://api.entur.io/journey-planner/v3/graphql'
 const GEOCODER_URL = 'https://api.entur.io/geocoder/v1/autocomplete'
 const CLIENT_NAME = 'vei-prototype'
 
-/** Nudges search results toward Oslo, so "Karl Johan" finds the street people mean. */
-const FOCUS = { lat: 59.91, lon: 10.75 }
+/** Used when a caller does not name a city. Otherwise search stays inside that city. */
+const FOCUS = { lat: 59.91, lon: 10.75, radiusKm: 55 }
 
 type Fetch = typeof fetch
 
@@ -46,47 +46,59 @@ const TRIP_QUERY = `query ($from: Location!, $to: Location!, $modes: Modes) {
 interface RawLeg {
   mode: string
   duration: number
-  distance: number
+  distance?: number
   expectedStartTime: string
   expectedEndTime: string
-  fromPlace: { name: string }
-  toPlace: { name: string }
-  line: { publicCode: string; authority: { name: string } } | null
+  fromPlace?: { name?: string | null } | null
+  toPlace?: { name?: string | null } | null
+  line: { publicCode?: string | null; authority?: { name?: string | null } | null } | null
 }
 interface RawPattern {
   expectedStartTime: string
   expectedEndTime: string
   duration: number
-  legs: RawLeg[]
+  legs?: RawLeg[] | null
 }
 interface RawGeocoderFeature {
-  geometry: { coordinates: [number, number] }
-  properties: { id: string; label: string; name: string }
+  geometry?: { coordinates?: [number, number] }
+  properties?: { id?: string; label?: string; name?: string }
 }
 
 export class EnturTransitService implements TransitService {
   constructor(private readonly fetchFn: Fetch = (...args) => fetch(...args)) {}
 
-  async searchPlaces(text: string, signal?: AbortSignal): Promise<PlaceRef[]> {
+  async searchPlaces(text: string, signal?: AbortSignal, focus?: { lat: number; lon: number; radiusKm?: number }): Promise<PlaceRef[]> {
     const query = text.trim()
     if (query.length < 2) return []
+    const point = focus ?? FOCUS
     const params = new URLSearchParams({
       text: query,
       size: '6',
       lang: 'en',
       'boundary.country': 'NOR',
-      'focus.point.lat': String(FOCUS.lat),
-      'focus.point.lon': String(FOCUS.lon),
+      'focus.point.lat': String(point.lat),
+      'focus.point.lon': String(point.lon),
+      'boundary.circle.lat': String(point.lat),
+      'boundary.circle.lon': String(point.lon),
+      'boundary.circle.radius': String(point.radiusKm ?? FOCUS.radiusKm),
     })
     const res = await this.fetchFn(`${GEOCODER_URL}?${params}`, { headers: { 'ET-Client-Name': CLIENT_NAME }, signal })
     if (!res.ok) throw new Error(`Place search failed (${res.status})`)
-    const json = (await res.json()) as { features: RawGeocoderFeature[] }
-    return json.features.map((f) => ({
-      name: f.properties.label || f.properties.name,
-      placeId: f.properties.id.startsWith('NSR:') ? f.properties.id : undefined,
-      lat: f.geometry.coordinates[1],
-      lon: f.geometry.coordinates[0],
-    }))
+    const json = (await res.json()) as { features?: RawGeocoderFeature[] }
+    return (json.features ?? []).flatMap((f) => {
+      const coords = f.geometry?.coordinates
+      const props = f.properties
+      if (!coords || coords.length < 2 || !props || (!props.name && !props.label)) return []
+      const id = props.id ?? ''
+      return [
+        {
+          name: props.label || props.name || 'Unnamed place',
+          placeId: id.startsWith('NSR:') ? id : undefined,
+          lat: coords[1],
+          lon: coords[0],
+        },
+      ]
+    })
   }
 
   async planTrip(from: PlaceRef, to: PlaceRef, signal?: AbortSignal): Promise<Journey[]> {
@@ -104,14 +116,14 @@ export class EnturTransitService implements TransitService {
       signal,
     )
     return patterns
-      .map((p) => ({ p, rides: p.legs.filter((leg) => leg.line) }))
+      .map((p) => ({ p, rides: (p.legs ?? []).filter((leg) => leg.line) }))
       .filter(({ rides }) => rides.length === 1) // direct trains only
       .map(({ p, rides }) => ({
         start: p.expectedStartTime,
         end: p.expectedEndTime,
         minutes: Math.round(p.duration / 60),
-        operator: rides[0].line!.authority.name,
-        line: rides[0].line!.publicCode,
+        operator: rides[0].line?.authority?.name || 'Train',
+        line: rides[0].line?.publicCode || '',
       }))
       .slice(0, 5)
   }
@@ -124,9 +136,10 @@ export class EnturTransitService implements TransitService {
       signal,
     })
     if (!res.ok) throw new Error(`Journey planner failed (${res.status})`)
-    const json = (await res.json()) as { data?: { trip: { tripPatterns: RawPattern[] } }; errors?: unknown }
-    if (!json.data) throw new Error('Journey planner returned no data')
-    return json.data.trip.tripPatterns
+    const json = (await res.json()) as { data?: { trip?: { tripPatterns?: RawPattern[] | null } | null }; errors?: unknown }
+    const patterns = json.data?.trip?.tripPatterns
+    if (!patterns) throw new Error('Journey planner returned no data')
+    return patterns
   }
 }
 
@@ -148,16 +161,24 @@ const MODES: Record<string, TransitMode> = {
   air: 'air',
 }
 
+function lineOf(leg: RawLeg): Leg['line'] {
+  if (!leg.line) return undefined
+  const code = leg.line.publicCode?.trim() ?? ''
+  const operator = leg.line.authority?.name?.trim() ?? ''
+  if (!code && !operator) return undefined
+  return { code, operator }
+}
+
 function toJourney(pattern: RawPattern): Journey {
-  const legs: Leg[] = pattern.legs.map((leg) => ({
+  const legs: Leg[] = (pattern.legs ?? []).map((leg) => ({
     mode: MODES[leg.mode] ?? 'other',
-    minutes: Math.max(1, Math.round(leg.duration / 60)),
-    from: leg.fromPlace.name,
-    to: leg.toPlace.name,
+    minutes: Math.max(1, Math.round((leg.duration ?? 0) / 60)),
+    from: leg.fromPlace?.name || 'Unknown stop',
+    to: leg.toPlace?.name || 'Unknown stop',
     start: leg.expectedStartTime,
     end: leg.expectedEndTime,
-    distanceMeters: Math.round(leg.distance),
-    line: leg.line ? { code: leg.line.publicCode, operator: leg.line.authority.name } : undefined,
+    distanceMeters: Math.round(leg.distance ?? 0),
+    line: lineOf(leg),
   }))
   return {
     start: pattern.expectedStartTime,

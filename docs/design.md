@@ -43,6 +43,10 @@ Aurora colours are used for decoration and highlights. Body text and controls us
 - **Modal**: the native `<dialog>`, so focus trapping and Escape work by default.
 - **Toast**: a polite live region.
 
+## City search
+
+One combobox at the top of the app (`CitySearch`). It lists the cities in this version and filters as you type. The current city stays in the field when the list is closed. Phone and wide screens share that one bar, stuck to the top of the content so it does not scroll away.
+
 ## Layout
 
 - Marketing site: hero with an illustrated night-sky scene, features, steps, privacy, demo CTA, roadmap.

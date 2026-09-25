@@ -37,7 +37,7 @@ export interface DirectTrain {
 }
 
 export interface TransitService {
-  searchPlaces(text: string, signal?: AbortSignal): Promise<PlaceRef[]>
+  searchPlaces(text: string, signal?: AbortSignal, focus?: { lat: number; lon: number; radiusKm?: number }): Promise<PlaceRef[]>
   planTrip(from: PlaceRef, to: PlaceRef, signal?: AbortSignal): Promise<Journey[]>
   nextAirportTrains(signal?: AbortSignal): Promise<DirectTrain[]>
 }

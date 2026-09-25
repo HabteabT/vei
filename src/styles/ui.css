@@ -521,6 +521,15 @@
   width: min(92vw, 420px);
   pointer-events: none;
 }
+/* The phone tab bar covers the bottom of the app. Keep messages above it. */
+.toast-region--app {
+  bottom: calc(88px + env(safe-area-inset-bottom));
+}
+@media (min-width: 960px) {
+  .toast-region--app {
+    bottom: 24px;
+  }
+}
 .toast {
   display: flex;
   gap: 10px;

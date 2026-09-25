@@ -34,7 +34,7 @@ export function UserMenu() {
   if (!user) {
     return (
       <LinkButton to="/login" variant="secondary" size="sm">
-        <LogIn aria-hidden="true" /> Sign in
+        <LogIn aria-hidden="true" /> <span className="usermenu__label">Sign in</span>
       </LinkButton>
     )
   }
