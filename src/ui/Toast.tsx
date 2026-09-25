@@ -1,5 +1,6 @@
 import { CircleCheck } from 'lucide-react'
 import { createContext, useCallback, useContext, useMemo, useState, type ReactNode } from 'react'
+import { useLocation } from 'react-router-dom'
 
 interface ToastItem {
   id: number
@@ -9,6 +10,8 @@ interface ToastItem {
 const ToastContext = createContext<(message: string) => void>(() => undefined)
 
 export function ToastProvider({ children }: { children: ReactNode }) {
+  const { pathname } = useLocation()
+  const inApp = pathname.startsWith('/app')
   const [items, setItems] = useState<ToastItem[]>([])
 
   const notify = useCallback((message: string) => {
@@ -22,7 +25,7 @@ export function ToastProvider({ children }: { children: ReactNode }) {
   return (
     <ToastContext.Provider value={value}>
       {children}
-      <div className="toast-region" role="status" aria-live="polite">
+      <div className={`toast-region ${inApp ? 'toast-region--app' : ''}`} role="status" aria-live="polite">
         {items.map((t) => (
           <div className="toast" key={t.id}>
             <CircleCheck aria-hidden="true" />
