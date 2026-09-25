@@ -92,6 +92,37 @@ describe('EnturTransitService', () => {
     expect(places[1].placeId).toBeUndefined()
   })
 
+  it('returns no places when the geocoder payload is empty', async () => {
+    const service = new EnturTransitService((() => json({})) as unknown as typeof fetch)
+    await expect(service.searchPlaces('oslo')).resolves.toEqual([])
+  })
+
+  it('plans a trip when a line has no operator name', async () => {
+    const fetchFn = vi.fn(() =>
+      json({
+        data: {
+          trip: {
+            tripPatterns: [
+              {
+                expectedStartTime: '2026-09-24T20:10:00+02:00',
+                expectedEndTime: '2026-09-24T20:30:00+02:00',
+                duration: 1200,
+                legs: [leg({ line: { publicCode: '31', authority: null } })],
+              },
+            ],
+          },
+        },
+      }),
+    )
+    const [journey] = await new EnturTransitService(fetchFn as unknown as typeof fetch).planTrip(OSLO_AIRPORT, {
+      name: 'Oslo S',
+      lat: 59.91,
+      lon: 10.75,
+    })
+    expect(journey.legs[0].line).toEqual({ code: '31', operator: '' })
+    expect(journey.changes).toBe(0)
+  })
+
   it('throws a clear error when Entur fails', async () => {
     const service = new EnturTransitService((() => json({}, false, 503)) as unknown as typeof fetch)
     await expect(service.nextAirportTrains()).rejects.toThrow('503')
