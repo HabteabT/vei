@@ -37,7 +37,7 @@ function LegRow({ leg }: { leg: Leg }) {
       <div className="leg__body">
         <div className="leg__title">
           {leg.mode === 'foot' ? `Walk ${leg.minutes} min` : `${MODE_LABEL[leg.mode]} ${leg.line?.code ?? ''}`.trim()}
-          {leg.line && leg.mode !== 'air' && <span className="leg__operator"> {leg.line.operator}</span>}
+          {leg.line?.operator && leg.mode !== 'air' && <span className="leg__operator"> {leg.line.operator}</span>}
         </div>
         <div className="leg__route">
           {clockTime(leg.start)} {leg.from} <ArrowRight aria-hidden="true" /> {clockTime(leg.end)} {leg.to}
@@ -53,7 +53,7 @@ function LegRow({ leg }: { leg: Leg }) {
  * Flights are different: the "operator" Entur lists is the airport company, so flights are booked with the airline.
  */
 function ticketApps(journey: Journey): string[] {
-  return [...new Set(journey.legs.filter((l) => l.line && l.mode !== 'air').map((l) => l.line!.operator))]
+  return [...new Set(journey.legs.filter((l) => l.line?.operator && l.mode !== 'air').map((l) => l.line!.operator))]
 }
 
 function ticketHint(journey: Journey): string | null {
